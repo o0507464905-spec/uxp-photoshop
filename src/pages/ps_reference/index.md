@@ -1,55 +1,56 @@
+---const app = require('photoshop').app;
+
+מזהה: "פוטושופ-API"
+כותרת: Photoshop API—UXP עבור Adobe Photoshop
+תיאור: למד על ה-API של Photoshop שנחשף באמצעות UXP עבור מפתחי תוספים וסקריפטים.
 ---
-id: "photoshop-api"
-title: Photoshop API—UXP for Adobe Photoshop
-description: Learn about the Photoshop API that is exposed through UXP for developers of plugins and scripts.
----
 
 
-# Photoshop API
+# API של Photoshop
 
-## Overview
+## סקירה כללית
 
-The following line allows you access to the Photoshop DOM via UXP.
+השורה הבאה מאפשרת לך גישה לפוטושופ DOM דרך UXP.
 ```javascript
 const app = require('photoshop').app;
 ```
-From here, you can open documents, modify them, run menu items, and more.
+מכאן תוכלו לפתוח מסמכים, לשנות אותם, להפעיל פריטי תפריט ועוד.
 
-### Minimum Version
-You will now find minimum version information on properties and methods.  This version tag corresponds to the version of Photoshop where the member was introduced or last updated significantly.
-For properties, you will find a column "MIN VERSION".  For methods, the version number appears as a tag to the right of the name.
+### גרסה מינימלית
+כעת תמצא מידע על גרסה מינימלית על מאפיינים ושיטות.  תג גרסה זה מתאים לגרסה של Photoshop שבה החבר הוצג או עודכן לאחרונה באופן משמעותי.
+עבור נכסים, תמצא עמודה "MIN VERSION".  עבור שיטות, מספר הגרסה מופיע כתג מימין לשם.
 
 
-## Synchronous vs Asynchronous
+## סינכרוני מול אסינכרוני
 
-An important difference between ExtendScript (and CEP) and UXP in Photoshop is that all ExtendScript calls to Photoshop were synchronous. This means they blocked the Photoshop UI while they were executing. In UXP, a method call is *asynchronous*, and does not block the UI thread.
+הבדל חשוב בין ExtendScript (ו-CEP) ל-UXP בפוטושופ הוא שכל קריאות ExtendScript לפוטושופ היו סינכרוניות. זה אומר שהם חסמו את ממשק המשתמש של Photoshop בזמן שהם בוצעו. ב-UXP, קריאת שיטה היא *אסינכרוני*, ואינו חוסם את שרשור ממשק המשתמש.
 
-For a smooth transition between the ExtendScript DOM and the UXP DOM, all properties (get and set) in the API were designed to be *synchronous* and do not need to be awaited. It is worth noting that they are, in the background, asynchronous in nature.
+למעבר חלק בין ExtendScript DOM ל-UXP DOM, כל המאפיינים (get ו-set) ב-API תוכננו להיות *סינכרוניים* ואין צורך להמתין. ראוי לציין כי הם, ברקע, אסינכרוני באופיים. *synchronous* and do not need to be awaited. It is worth noting that they are, in the background, asynchronous in nature.
 
 ## Working with Photoshop Objects
 
 ### Photoshop Application
 
-Through the [`app`](#overview) object, you can access the rest of Photoshop's objects and methods.
+דרך האובייקט [`app`](#overview), תוכל לגשת לשאר האובייקטים והשיטות של Photoshop. [`app`](#overview) object, you can access the rest of Photoshop's objects and methods.
 
-The currently-active document is obtained like this:
+המסמך הפעיל כעת מתקבל כך:
 
-```javascript
+`````` javascript
 const doc = app.activeDocument;
 ```
 
-And you can get an array of all open documents like this:
+ואתה יכול לקבל מערך של כל המסמכים הפתוחים כמו זה:
 
-```javascript
+`````` javascript
 const allDocuments = app.documents;
 ```
 
-See more properties and methods in `app` under [Photoshop](./classes/photoshop/).
+ראה מאפיינים ושיטות נוספים ב'אפליקציה' תחת [Photoshop](./classes/photoshop/). `app` under [Photoshop](./classes/photoshop/).
 
 ### Detour - ExecuteAsModal
-A key concept to understand before diving straight into Photoshop UXP plugin development is what we have termed "execute as modal". Any and all commands that may **modify the document**, or the **application state**, must utilize executeAsModal.
+מושג מפתח שצריך להבין לפני צלילה ישר לפיתוח תוסף UXP של Photoshop הוא מה שכינינו "ביצוע כמודאלי". כל הפקודות שעשויות **לשנות את המסמך**, או את **מצב היישום**, חייבות להשתמש ב-executeAsModal. **modify the document**, or the **application state**, must utilize executeAsModal.
 
-```javascript
+`````` javascript
 async function makeDefaultDocument(executionContext) {
   const app = require('photoshop').app;
   let myDoc = await app.createDocument({preset: "My Web Preset 1"});
@@ -58,14 +59,14 @@ async function makeDefaultDocument(executionContext) {
 await require('photoshop').core.executeAsModal(makeDefaultDocument);
 ```
 
-As you may notice, this restriction could encompass much of your plugin's functionality! There are many benefits for this model, however. A more detailed explanation is provided in the [Execute as Modal documentation](./media/executeasmodal/).
+כפי שאתה עשוי לשים לב, הגבלה זו עשויה להקיף חלק גדול מהפונקציונליות של התוסף שלך! עם זאת, ישנם יתרונות רבים לדגם זה. הסבר מפורט יותר מסופק ב[תיעוד ביצוע כמודאלי](./media/executeasmodal/). [Execute as Modal documentation](./media/executeasmodal/).
 
 ### Document
-Represents a single, open Photoshop document. From this object, you can access the document's layers, dimensions, resolution, etc. You can crop it, add/delete/duplicate layers, resize, rotate, and save it.
+מייצג מסמך פוטושופ בודד ופתוח. מאובייקט זה ניתן לגשת לשכבות, ממדים, רזולוציה וכו' של המסמך. ניתן לחתוך אותו, להוסיף/למחוק/לשכפל שכבות, לשנות גודל, לסובב ולשמור אותו.
 
-Get the dimensions of the active document:
+קבל את המידות של המסמך הפעיל:
 
-```javascript
+`````` javascript
 const app = require('photoshop').app;
 const myDoc = app.activeDocument;
 const height = myDoc.height;
@@ -74,9 +75,9 @@ const resolution = myDoc.resolution;
 console.log(`Doc size is ${width} x ${height}. Resolution is ${resolution}`);
 ```
 
-Flatten all currently open documents:
+שטח את כל המסמכים הפתוחים כעת:
 
-```javascript
+`````` javascript
 const app = require('photoshop').app;
 const toFlatten = app.documents;
 async function flattenThem(executionContext) {
